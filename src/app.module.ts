@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
 import { User } from './user/user.entity';
 
@@ -16,9 +17,14 @@ import { User } from './user/user.entity';
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      playground: true,
+      // Disable the legacy playground so Nest/driver won't auto-register another
+      // landing-page plugin. We explicitly register the Apollo v4 landing page plugin
+      // when running in development only.
+      playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      csrfPrevention: false,
+      // Enable CSRF prevention in non-development (production) environments.
+      csrfPrevention: process.env.NODE_ENV === 'production',
+      plugins: process.env.NODE_ENV === 'production' ? [] : [ApolloServerPluginLandingPageLocalDefault()],
     }),
 
     TypeOrmModule.forRootAsync({
