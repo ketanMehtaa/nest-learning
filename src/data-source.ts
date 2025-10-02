@@ -1,6 +1,8 @@
 import { DataSource } from 'typeorm';
-import { User } from './user/user.entity';
 import * as dotenv from 'dotenv';
+import { User } from './user/user';
+import { Order } from './user/order';
+import { OrderItem } from './user/orderItem';
 
 // Load environment variables
 dotenv.config();
@@ -14,7 +16,7 @@ export const AppDataSource = new DataSource({
   database: process.env.DB_NAME || 'my_crm',
   synchronize: false,
   logging: process.env.NODE_ENV === 'development',
-  entities: [User],
+  entities: [User, Order, OrderItem],
   migrations: ['src/migrations/*.ts'], // Source TS files for CLI
   subscribers: [],
 });

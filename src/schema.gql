@@ -2,6 +2,39 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type OrderItem {
+  """Unique order id (UUID)"""
+  id: ID!
+  quantity: Int!
+  unitPrice: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Order {
+  """Unique order id (UUID)"""
+  id: ID!
+
+  """User id who placed the order"""
+  userId: ID!
+
+  """List of order items in the order"""
+  items: [OrderItem!]
+
+  """Order status"""
+  status: String!
+
+  """Order total amount"""
+  total: Float!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
 type User {
   """Unique user id (UUID)"""
   id: ID!
@@ -17,12 +50,10 @@ type User {
 
   """When the user was last updated"""
   updatedAt: DateTime!
-}
 
-"""
-A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
-"""
-scalar DateTime
+  """Orders placed by the user"""
+  orders: [Order!]
+}
 
 type Query {
   users: [User!]!

@@ -6,6 +6,8 @@ import { User, UserModule } from './user/user';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
+import { Order } from './user/order';
+import { OrderItem } from './user/orderItem';
 
 @Module({
   imports: [
@@ -16,12 +18,8 @@ import { join } from 'path';
 
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      // Disable the legacy playground so Nest/driver won't auto-register another
-      // landing-page plugin. We explicitly register the Apollo v4 landing page plugin
-      // when running in development only.
       playground: false,
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-      // Enable CSRF prevention in non-development (production) environments.
       csrfPrevention: process.env.NODE_ENV === 'production',
       plugins:
         process.env.NODE_ENV === 'production'
@@ -31,18 +29,21 @@ import { join } from 'path';
 
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        type: 'postgres',
-        host: configService.get('DB_HOST', 'localhost'),
-        port: configService.get('DB_PORT', 5433),
-        username: configService.get('DB_USERNAME', 'postgres'),
-        password: configService.get('DB_PASSWORD', 'postgres'),
-        database: configService.get('DB_NAME', 'my_crm'),
-        entities: [User], // Better to explicitly list entities
-        migrations: ['dist/migrations/*.js'], // Compiled JS files
-        synchronize: false,
-        logging: configService.get('NODE_ENV') === 'development',
-      }),
+      useFactory: (configService: ConfigService) => {
+        const isProd = configService.get('NODE_ENV') === 'production';
+        return {
+          type: 'postgres',
+          host: configService.get('DB_HOST', 'localhost'),
+          port: configService.get<number>('DB_PORT', 5433),
+          username: configService.get('DB_USERNAME', 'postgres'),
+          password: configService.get('DB_PASSWORD', 'postgres'),
+          database: configService.get('DB_NAME', 'my_crm'),
+          entities: [User, Order, OrderItem],
+          migrations: ['dist/migrations/*.js'],
+          synchronize: !isProd, // ✅ auto-sync in dev, migrations in prod
+          logging: !isProd,     // log queries only in dev
+        };
+      },
       inject: [ConfigService],
     }),
 

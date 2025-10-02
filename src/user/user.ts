@@ -7,6 +7,7 @@ import {
   Repository,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 import {
   Resolver,
@@ -20,6 +21,7 @@ import {
   GraphQLISODateTime,
 } from '@nestjs/graphql';
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { Order } from './order';
 
 /** Combined User entity */
 @ObjectType()
@@ -44,10 +46,17 @@ export class User {
   @CreateDateColumn()
   createdAt: Date;
 
-  @Field(() => GraphQLISODateTime, { description: 'When the user was last updated' })
+  @Field(() => GraphQLISODateTime, {
+    description: 'When the user was last updated',
+  })
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Field(() => [Order], { nullable: true, description: 'Orders placed by the user' })
+  @OneToMany(() => Order, (order) => order.user)
+  orders?: Order[];
 }
+
 
 /** Input type for creating a user */
 @InputType()
