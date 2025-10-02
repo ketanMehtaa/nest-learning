@@ -3,10 +3,19 @@
 # ------------------------------------------------------
 
 type User {
-  id: Int!
+  """Unique user id (UUID)"""
+  id: ID!
+
+  """Full name of the user"""
   name: String!
+
+  """Email address"""
   email: String!
+
+  """When the user was created"""
   createdAt: DateTime!
+
+  """When the user was last updated"""
   updatedAt: DateTime!
 }
 
@@ -20,15 +29,19 @@ type Query {
 }
 
 type Mutation {
-  createUser(input: CreateUserInput!): User!
-  deleteUser(input: DeleteUserInput!): User!
+  createUser(input: CreateUserInputDTO!): User!
+  deleteUser(input: DeleteUserInputDTO!): User!
 }
 
-input CreateUserInput {
+input CreateUserInputDTO {
+  """Full name (2-100 chars)"""
   name: String!
+
+  """Valid email address"""
   email: String!
 }
 
-input DeleteUserInput {
-  id: Int!
+input DeleteUserInputDTO {
+  """UUID of the user to delete"""
+  id: ID!
 }

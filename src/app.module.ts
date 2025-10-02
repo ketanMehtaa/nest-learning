@@ -2,11 +2,10 @@ import { Module } from '@nestjs/common';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UserModule } from './user/user.module';
+import { User, UserModule } from './user/user';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default';
 import { join } from 'path';
-import { User } from './user/user.entity';
 
 @Module({
   imports: [
@@ -24,7 +23,10 @@ import { User } from './user/user.entity';
       autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       // Enable CSRF prevention in non-development (production) environments.
       csrfPrevention: process.env.NODE_ENV === 'production',
-      plugins: process.env.NODE_ENV === 'production' ? [] : [ApolloServerPluginLandingPageLocalDefault()],
+      plugins:
+        process.env.NODE_ENV === 'production'
+          ? []
+          : [ApolloServerPluginLandingPageLocalDefault()],
     }),
 
     TypeOrmModule.forRootAsync({

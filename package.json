@@ -25,7 +25,9 @@
     "migration:run": "typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "migration:revert": "typeorm-ts-node-commonjs migration:revert -d ./src/data-source.ts",
     "migration:create": "typeorm-ts-node-commonjs migration:create ./src/migrations/Migration",
-    "migration:show": "typeorm-ts-node-commonjs migration:show -d ./src/data-source.ts"
+    "migration:show": "typeorm-ts-node-commonjs migration:show -d ./src/data-source.ts",
+    "db:reset": "sh -c 'while npm run migration:revert --silent >/dev/null 2>&1; do :; done && npm run migration:run'",
+  "db:hard-reset": "sh -c 'PGPASSWORD=\"$DB_PASSWORD\" psql -h \"${DB_HOST:-localhost}\" -p \"${DB_PORT:-5433}\" -U \"${DB_USERNAME:-postgres}\" -d \"${DB_NAME:-my_crm}\" -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\" && npm run migration:run'"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
