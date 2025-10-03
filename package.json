@@ -27,11 +27,14 @@
     "migration:create": "typeorm-ts-node-commonjs migration:create ./src/migrations/Migration",
     "migration:show": "typeorm-ts-node-commonjs migration:show -d ./src/data-source.ts",
     "db:reset": "sh -c 'while npm run migration:revert --silent >/dev/null 2>&1; do :; done && npm run migration:run'",
-  "db:hard-reset": "sh -c 'PGPASSWORD=\"$DB_PASSWORD\" psql -h \"${DB_HOST:-localhost}\" -p \"${DB_PORT:-5433}\" -U \"${DB_USERNAME:-postgres}\" -d \"${DB_NAME:-my_crm}\" -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\" && npm run migration:run'"
+    "db:hard-reset": "sh -c 'PGPASSWORD=\"$DB_PASSWORD\" psql -h \"${DB_HOST:-localhost}\" -p \"${DB_PORT:-5433}\" -U \"${DB_USERNAME:-postgres}\" -d \"${DB_NAME:-my_crm}\" -c \"DROP SCHEMA public CASCADE; CREATE SCHEMA public;\" && npm run migration:run'",
+    "seed": "ts-node dbseed/seed.ts",
+    "load-test": "artillery run load-test.yml"
   },
   "dependencies": {
     "@apollo/server": "^4.12.2",
     "@as-integrations/fastify": "^2.1.1",
+    "@faker-js/faker": "^10.0.0",
     "@nestjs/apollo": "^13.1.0",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",

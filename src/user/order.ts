@@ -141,7 +141,7 @@ export class OrderService {
     return this.orderRepo.find({ relations: ['user', 'orderItem'] });
   }
   async deleteOrder(id: string) {
-    const order = await this.orderRepo.findOneBy({ id });
+    const order = await this.orderRepo.findOne({ where: { id }, relations: ['orderItem'] });
     if (!order) {
       throw new NotFoundException(`Order with id ${id} not found`);
     }

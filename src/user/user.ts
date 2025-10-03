@@ -57,7 +57,7 @@ export class User {
     nullable: true,
     description: 'Orders placed by the user',
   })
-  @OneToMany(() => Order, (order) => order.user)
+  @OneToMany(() => Order, (order) => order.user, { onDelete: 'CASCADE' })
   orders?: Order[];
 }
 
@@ -94,7 +94,7 @@ export class UserService {
   }
 
   findAll() {
-    return this.userRepo.find();
+    return this.userRepo.find({ relations: ['orders',] });
   }
 
   findOne(id: string) {
@@ -105,7 +105,11 @@ export class UserService {
   }
 
   async deleteUser(id: string) {
-    const user = await this.userRepo.findOneBy({ id });
+    // Find the user with their orders and order items and we get it back in deleted grahpql 
+    const user = await this.userRepo.findOne({
+      where: { id },
+      relations: ['orders', 'orders.orderItem'],
+    });
     if (!user) {
       throw new NotFoundException(`User with id ${id} not found`);
     }
