@@ -20,17 +20,17 @@ type Order {
   """Unique order id (UUID)"""
   id: ID!
 
-  """User id who placed the order"""
-  userId: ID!
+  """User who placed the order"""
+  user: User!
 
   """List of order items in the order"""
-  items: [OrderItem!]
+  orderItem: [OrderItem!]
 
   """Order status"""
   status: String!
 
   """Order total amount"""
-  total: Float!
+  totalCost: Float!
   createdAt: DateTime!
   updatedAt: DateTime!
 }
@@ -57,11 +57,18 @@ type User {
 
 type Query {
   users: [User!]!
+  user(id: ID!): User!
+  orders: [Order!]!
+  orderItems: [OrderItem!]!
 }
 
 type Mutation {
   createUser(input: CreateUserInputDTO!): User!
   deleteUser(input: DeleteUserInputDTO!): User!
+  createOrder(input: CreateOrderInputDTO!): Order!
+  deleteOrder(input: DeleteOrderInputDTO!): Order!
+  createOrderItem(input: CreateOrderItemInputDTO!): OrderItem!
+  deleteOrderItem(input: DeleteOrderItemInputDTO!): OrderItem!
 }
 
 input CreateUserInputDTO {
@@ -74,5 +81,48 @@ input CreateUserInputDTO {
 
 input DeleteUserInputDTO {
   """UUID of the user to delete"""
+  id: ID!
+}
+
+input CreateOrderInputDTO {
+  """User id who placed the order"""
+  userId: ID!
+
+  """Order status"""
+  status: String!
+
+  """Order total amount"""
+  totalCost: Float!
+
+  """List of order items"""
+  orderItems: [CreateOrderOrderItemInputDTO!]!
+}
+
+input CreateOrderOrderItemInputDTO {
+  """Quantity of the item"""
+  quantity: Int!
+
+  """Unit price of the item"""
+  unitPrice: Float!
+}
+
+input DeleteOrderInputDTO {
+  """UUID of the order to delete"""
+  id: ID!
+}
+
+input CreateOrderItemInputDTO {
+  """Quantity of the item"""
+  quantity: Int!
+
+  """Unit price of the item"""
+  unitPrice: Float!
+
+  """Order ID this item belongs to"""
+  orderId: ID!
+}
+
+input DeleteOrderItemInputDTO {
+  """UUID of the order item to delete"""
   id: ID!
 }

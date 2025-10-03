@@ -8,6 +8,8 @@ import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin
 import { join } from 'path';
 import { Order } from './user/order';
 import { OrderItem } from './user/orderItem';
+import { OrderModule } from './user/order';
+import { OrderItemModule } from './user/orderItem';
 
 @Module({
   imports: [
@@ -48,6 +50,8 @@ import { OrderItem } from './user/orderItem';
     }),
 
     UserModule,
+    OrderModule,
+    OrderItemModule,
   ],
 })
 export class AppModule {}

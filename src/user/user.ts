@@ -52,11 +52,14 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Field(() => [Order], { nullable: true, description: 'Orders placed by the user' })
+  // Relation to orders
+  @Field(() => [Order], {
+    nullable: true,
+    description: 'Orders placed by the user',
+  })
   @OneToMany(() => Order, (order) => order.user)
   orders?: Order[];
 }
-
 
 /** Input type for creating a user */
 @InputType()
@@ -93,6 +96,14 @@ export class UserService {
   findAll() {
     return this.userRepo.find();
   }
+
+  findOne(id: string) {
+    return this.userRepo.findOne({
+      where: { id },
+      relations: ['orders', 'orders.orderItem'],
+    });
+  }
+
   async deleteUser(id: string) {
     const user = await this.userRepo.findOneBy({ id });
     if (!user) {
@@ -113,6 +124,11 @@ export class UserResolver {
   @Query(() => [User])
   users(): Promise<User[]> {
     return this.service.findAll();
+  }
+
+  @Query(() => User)
+  user(@Args('id', { type: () => ID }) id: string): Promise<User | null> {
+    return this.service.findOne(id);
   }
 
   @Mutation(() => User)
