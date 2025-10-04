@@ -14,7 +14,7 @@ async function seed() {
   const itemRepo = AppDataSource.getRepository(OrderItem);
 
   // Configuration variables - adjust these to control seeding
-  const numUsers = 10000;
+  const numUsers = 1000;
   const numOrdersPerUser = 10;
   const numItemsPerOrder = 3;
 

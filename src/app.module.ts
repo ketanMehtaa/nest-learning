@@ -27,6 +27,10 @@ import { OrderItemModule } from './user/orderItem';
         process.env.NODE_ENV === 'production'
           ? []
           : [ApolloServerPluginLandingPageLocalDefault()],
+      formatError: (error) => {
+        console.error('GraphQL Error:', error);
+        return error;
+      },
     }),
 
     TypeOrmModule.forRootAsync({
@@ -43,7 +47,7 @@ import { OrderItemModule } from './user/orderItem';
           entities: [User, Order, OrderItem],
           migrations: ['dist/migrations/*.js'],
           synchronize: !isProd, // ✅ auto-sync in dev, migrations in prod
-          logging: !isProd,     // log queries only in dev
+          logging: !isProd, // log queries only in dev
         };
       },
       inject: [ConfigService],

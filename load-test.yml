@@ -4,47 +4,21 @@ config:
     userId: "32594501-a266-4cd6-9937-6d507725c76a"  # Replace with a real user ID from your seeded data
   phases:
     - duration: 30
-      arrivalRate: 5  # Warm up with 5 requests/second
-      name: Warm up
-    - duration: 60
-      arrivalRate: 20  # Load test with 20 requests/second
-      name: Load test
-    - duration: 30
-      arrivalRate: 50  # Stress test with 50 requests/second
+      arrivalRate: 100  # Stress test with 50 requests/second
       name: Stress test
   defaults:
     headers:
       Content-Type: 'application/json'
 
 scenarios:
-  - name: 'Get all users'
-    weight: 40
+  - name: 'Get user'
+    weight: 50
     flow:
       - post:
           url: '/graphql'
           json:
             query: |
-              query {
-                users {
-                  id
-                  name
-                  email
-                  orders {
-                    id
-                    status
-                    totalCost
-                  }
-                }
-              }
-
-  - name: 'Get user with orders'
-    weight: 30
-    flow:
-      - post:
-          url: '/graphql'
-          json:
-            query: |
-              query GetUserOrders($userId: ID!) {
+              query GetUser($userId: ID!) {
                 user(id: $userId) {
                   id
                   name
@@ -65,7 +39,7 @@ scenarios:
               userId: "{{ userId }}"
 
   - name: 'Create order'
-    weight: 20
+    weight: 30
     flow:
       - post:
           url: '/graphql'
@@ -73,12 +47,9 @@ scenarios:
             query: |
               mutation CreateOrder($input: CreateOrderInputDTO!) {
                 createOrder(input: $input) {
-                  id
                   status
                   totalCost
-                  userId
                   orderItem {
-                    id
                     quantity
                     unitPrice
                   }
@@ -95,23 +66,26 @@ scenarios:
                   - quantity: 1
                     unitPrice: 0.01
 
-  - name: 'Get all orders'
-    weight: 10
+  - name: 'Get user orders'
+    weight: 20
     flow:
       - post:
           url: '/graphql'
           json:
             query: |
-              query {
-                orders {
-                  id
-                  status
-                  totalCost
-                  userId
-                  orderItem {
+              query GetUserOrders($userId: ID!) {
+                user(id: $userId) {
+                  orders {
                     id
-                    quantity
-                    unitPrice
+                    status
+                    totalCost
+                    orderItem {
+                      id
+                      quantity
+                      unitPrice
+                    }
                   }
                 }
               }
+            variables:
+              userId: "{{ userId }}"
